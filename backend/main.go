@@ -16,6 +16,6 @@ func main() {
 		port = "8080"
 	}
 
-	http.HandleFunc("/hello", hello)
+	http.HandleFunc("/api/hello", hello)
 	http.ListenAndServe(":"+port, nil)
 }
