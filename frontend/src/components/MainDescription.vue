@@ -1,81 +1,68 @@
 <template>
-    <div class="min-h-screen bg-[#DDDFC2] text-center py-12 px-4">
+  <div class="min-h-screen bg-[#DDDFC2] text-center py-12 px-4">
+    <div class="max-w-6xl mx-auto">
+      
+      <!-- Главная иконка — БОЛЬШАЯ -->
+      <BookIcon size="2xl" animated class="mx-auto mb-8 text-[#2C341B]" />
         
-        <div class="max-w-6xl mx-auto">
-            
-            <!-- Иконка книги -->
-            <div class="mb-8">
-                <svg class="w-12 h-12 mx-auto text-[#2C341B]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
-                    <path stroke-linecap="round" stroke-linejoin="round" 
-                          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-            </div>
+      <h1 class="text-5xl sm:text-7xl font-bold mb-4" :style="{ color: text.main }">
+        BookTook
+      </h1>
+      
+      <p class="text-xl sm:text-2xl mb-4" :style="{ color: text.subtitle }">
+        Социальная сеть для тех, кто читает
+      </p>
+      
+      <p class="text-base sm:text-lg mb-10 max-w-2xl mx-auto" :style="{ color: text.body }">
+        Делись прочитанными книгами, пиши обзоры, находи единомышленников
+      </p>
 
-            <!-- Заголовок -->
-            <h1 class="text-5xl md:text-7xl font-bold text-[#2C341B] mb-4 tracking-tight">
-                BookTook
-            </h1>
+      <AppButton :colors="button" @click="start">Начать</AppButton>
 
-            <!-- Подзаголовок -->
-            <p class="text-xl md:text-2xl font-medium text-[#2C341B]/80 mb-4">
-                Социальная сеть для тех, кто читает
-            </p>
+      <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 lg:sizeClass">
+        
+        <AppCard :colors="card">
+          <BookIcon class="w-8 h-8 mx-auto mb-3" :style="{ color: card.icon }" />
+          <div class="font-bold mb-1" :style="{ color: card.title }">Моя полка</div>
+          <div class="text-sm">Собери свою библиотеку</div>
+        </AppCard>
 
-            <!-- Описание -->
-            <p class="text-base md:text-lg font-medium text-[#2C341B]/60 mb-10 max-w-2xl mx-auto leading-relaxed">
-                Делись прочитанными книгами, пиши обзоры, находи единомышленников 
-                и следи за тем, что читают твои друзья
-            </p>
+        <AppCard :colors="card">
+          <PenIcon class="w-8 h-8 mx-auto mb-3" :style="{ color: card.icon }" />
+          <div class="font-bold mb-1" :style="{ color: card.title }">Обзоры</div>
+          <div class="text-sm">Делись мнением</div>
+        </AppCard>
 
-            <!-- Кнопка коричневатая -->
-            <button 
-                @click="start"
-                class="group inline-flex items-center px-8 py-3 text-lg text-[#DDDFC2] font-medium bg-[#5C4A3A] hover:bg-[#7A6450] rounded-full transition-all duration-300 shadow-xl"
-            >
-                Начать
-                <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-            </button>
+        <AppCard :colors="card">
+          <UsersIcon class="w-8 h-8 mx-auto mb-3" :style="{ color: card.icon }" />
+          <div class="font-bold mb-1" :style="{ color: card.title }">Друзья</div>
+          <div class="text-sm">Находи читателей</div>
+        </AppCard>
 
-            <!-- Фичи с фоном 688A65 -->
-            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-[#DDDFC2]">
-                
-                <!-- Фича 1 -->
-                <div class="p-6 rounded-2xl shadow-lg bg-[#70896dc5] hover:bg-[#688a65cf] transition-colors">
-                    <svg class="w-8 h-8 mx-auto mb-3 text-[#DDDFC2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                    <div class="text-[#DDDFC2] font-bold mb-1">Моя полка</div>
-                    <div class="text-sm font-medium text-[#DDDFC2]/80">Собери свою библиотеку</div>
-                </div>
+        <AppCard :colors="card">
+          <BookmarkIcon class="w-8 h-8 mx-auto mb-3" :style="{ color: card.icon }" />
+          <div class="font-bold mb-1" :style="{ color: card.title }">Хочу прочитать</div>
+          <div class="text-sm">Сохраняй в список</div>
+        </AppCard>
 
-                <!-- Фича 2 -->
-                <div class="p-6 rounded-2xl shadow-lg bg-[#70896dc5] hover:bg-[#688a65cf] transition-colors">
-                    <svg class="w-8 h-8 mx-auto mb-3 text-[#DDDFC2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
-                    <div class="text-[#DDDFC2] font-bold mb-1">Обзоры</div>
-                    <div class="text-sm font-medium text-[#DDDFC2]/80">Делись мнением</div>
-                </div>
+      </div>
 
-                <!-- Фича 3 -->
-                <div class="p-6 rounded-2xl shadow-lg bg-[#70896dc5] hover:bg-[#688a65cf] transition-colors">
-                    <svg class="w-8 h-8 mx-auto mb-3 text-[#DDDFC2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    <div class="text-[#DDDFC2] font-bold mb-1">Друзья</div>
-                    <div class="text-sm font-medium text-[#DDDFC2]/80">Находи читателей</div>
-                </div>
-
-            </div>
-
-        </div>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-const start = () => {
-    alert('Переход к регистрации...')
-}
+import AppButton from '../components/ui/AppButton.vue'
+import AppCard from '../components/ui/AppCard.vue'
+import { brownButton, greenCard, darkText } from '../assets/styles/palette'
+import BookIcon from '../assets/icons/BookIcon.vue'
+import PenIcon from '../assets/icons/PenIcon.vue'
+import UsersIcon from '../assets/icons/UserIcon.vue'
+import BookmarkIcon from '../assets/icons/BookmarkIcon.vue'
+
+const button = brownButton
+const card = greenCard
+const text = darkText
+
+const start = () => alert('Переход к регистрации...')
 </script>
