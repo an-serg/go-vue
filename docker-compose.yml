@@ -3,13 +3,19 @@ version: '3.8'
 services:
   backend:
     build: ./backend
+    env_file:
+      - ./backend/.env
     expose:
       - "8080"
+    networks:
+      - postgre_booktook_net
 
   frontend:
     build: ./frontend
     expose:
       - "80"
+    networks:
+      - postgre_booktook_net
 
   nginx:
     build: ./nginx
@@ -18,3 +24,9 @@ services:
     depends_on:
       - backend
       - frontend
+    networks:
+      - postgre_booktook_net
+
+networks:
+  postgre_booktook_net:
+    external: true  # ← используем существующую сеть postgres
