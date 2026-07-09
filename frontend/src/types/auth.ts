@@ -1,0 +1,27 @@
+// src/types/auth.ts
+export interface RegisterFormData {
+  username: string
+  email: string
+  password: string
+  confirmPassword: string
+}
+
+export interface LoginFormData {
+  email: string
+  password: string
+}
+
+export interface RegisterPayload {
+  username: string
+  email: string
+  password: string
+}
+
+export interface AuthResponse {
+  token: string
+  user: {
+    id: string
+    username: string
+    email: string
+  }
+}

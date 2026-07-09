@@ -17,7 +17,7 @@
         Делись прочитанными книгами, пиши обзоры, находи единомышленников
       </p>
 
-      <AppButton :colors="button" @click="start">Начать</AppButton>
+      <AppButton :colors="button" @click="main_registration">Начать</AppButton>
 
       <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 lg:sizeClass">
         
@@ -59,10 +59,17 @@ import BookIcon from '../assets/icons/BookIcon.vue'
 import PenIcon from '../assets/icons/PenIcon.vue'
 import UsersIcon from '../assets/icons/UserIcon.vue'
 import BookmarkIcon from '../assets/icons/BookmarkIcon.vue'
+import { useRouter } from 'vue-router'
+
 
 const button = brownButton
 const card = greenCard
 const text = darkText
 
-const start = () => alert('Переход к регистрации...')
+const router = useRouter()
+
+function main_registration(): void {
+  router.push('/register')
+}
+
 </script>
