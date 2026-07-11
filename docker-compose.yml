@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  auth:
+    build: ./auth
+    expose:
+      - "3000"
+    env_file:
+      - ./auth/.env
+    networks:
+      - postgre_booktook_net
+
   backend:
     build: ./backend
     env_file:
@@ -9,6 +18,8 @@ services:
       - "8080"
     networks:
       - postgre_booktook_net
+    depends_on:
+      - auth
 
   frontend:
     build: ./frontend
@@ -22,6 +33,7 @@ services:
     ports:
       - "80:80"
     depends_on:
+      - auth
       - backend
       - frontend
     networks:
