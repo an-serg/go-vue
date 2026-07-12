@@ -1,5 +1,6 @@
 // src/types/auth.ts
 export interface RegisterFormData {
+  nick: string
   username: string
   email: string
   password: string

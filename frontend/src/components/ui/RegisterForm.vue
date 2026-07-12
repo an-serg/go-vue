@@ -1,6 +1,15 @@
 <template>
   <form class="space-y-6" @submit.prevent="submit">
-    
+    <div>
+      <label class="block text-sm font-medium text-[#2C341B] mb-1">Имя пользователя</label>
+      <input 
+        v-model="form.nick" 
+        type="text" 
+        placeholder="anna_reads"
+        class="w-full px-4 py-3 rounded-xl bg-[#DDDFC2] border-2 border-[#94A59C] text-[#2C341B] placeholder-[#94A59C] focus:border-[#688A65] focus:outline-none transition-colors"
+      >
+    </div>
+
     <div>
       <label class="block text-sm font-medium text-[#2C341B] mb-1">Имя пользователя</label>
       <input 
@@ -59,6 +68,7 @@ const emit = defineEmits<{
 }>()
 
 const form = reactive<RegisterFormData>({
+  nick: '',
   username: '',
   email: '',
   password: '',
