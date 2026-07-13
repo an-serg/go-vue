@@ -1,6 +1,7 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
 import { RegisterDto } from '../users/dto/register.dto';
 
@@ -9,29 +10,43 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepo: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   async register(dto: RegisterDto) {
-    // Проверяем, есть ли email в БД
+    if (dto.password !== dto.confirmPassword) {
+      throw new BadRequestException('Пароли не совпадают');
+    }
+
     const existingEmail = await this.userRepo.findOne({
       where: { email: dto.email },
     });
     if (existingEmail) {
-      throw new ConflictException('Email уже используется');
+      throw new BadRequestException('Email уже зарегестрирован. Попробуйте авторизоваться через Вход');
     }
 
-    // Проверяем, есть ли username в БД
     const existingUsername = await this.userRepo.findOne({
       where: { username: dto.username },
     });
     if (existingUsername) {
-      throw new ConflictException('Username уже занят');
+      throw new BadRequestException('Username уже занят');
     }
 
-    // Создаём пользователя (пароль хешируется автоматически @BeforeInsert)
     const user = this.userRepo.create(dto);
     await this.userRepo.save(user);
 
-    return { message: 'Регистрация успешна', userId: user.id };
+    const payload = { sub: user.id, email: user.email, username: user.username };
+    const accessToken = this.jwtService.sign(payload);
+
+    return { 
+      message: 'Регистрация успешна',
+      accessToken,
+      user: {
+        id: user.id,
+        username: user.username,
+        nickname: user.nick,
+        email: user.email,
+      },
+    };
   }
 }
