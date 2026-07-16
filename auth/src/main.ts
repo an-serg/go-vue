@@ -19,7 +19,7 @@ async function bootstrap() {
       .setVersion('1.0')
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('/auth/api', app, document);
+    SwaggerModule.setup('/auth/docs', app, document);
 
     await app.listen(3000);
   }
