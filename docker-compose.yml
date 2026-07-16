@@ -41,4 +41,4 @@ services:
 
 networks:
   postgre_booktook_net:
-    external: true  # ← используем существующую сеть postgres
+    external: true  

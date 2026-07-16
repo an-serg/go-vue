@@ -17,21 +17,30 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     if (dto.password !== dto.confirmPassword) {
-      throw new BadRequestException('Пароли не совпадают');
+      throw new BadRequestException({
+        field: 'confirmPassword',
+        message: 'Пароли не совпадают'
+      });
     }
 
     const existingEmail = await this.userRepo.findOne({
       where: { email: dto.email },
     });
     if (existingEmail) {
-      throw new BadRequestException('Email уже зарегестрирован');
+      throw new BadRequestException({
+        field: 'email',
+        message: 'Email уже зарегестрирован'
+      });
     }
 
     const existingUsername = await this.userRepo.findOne({
       where: { username: dto.username },
     });
     if (existingUsername) {
-      throw new BadRequestException('Username уже занят');
+      throw new BadRequestException({
+        field: 'username',
+        message: 'Username уже занят'
+      });
     }
 
     const user = this.userRepo.create(dto);
@@ -55,12 +64,18 @@ export class AuthService {
       where: { email: dto.email }
     })
     if (!user) {
-      throw new BadRequestException('Email ещё не зарегистрирован');
+      throw new BadRequestException({
+        field: 'email',
+        message: 'Email ещё не зарегестрирован'
+      });
     }
     
     const isPasswordValid = await argon2.verify( user.password, dto.password)
     if (!isPasswordValid) {
-      throw new BadRequestException('Неправильный пароль');
+      throw new BadRequestException({
+        field: 'password',
+        message: 'Неправильный пароль'
+      });
     }
 
     const payload = { sub: user.id, email: user.email };

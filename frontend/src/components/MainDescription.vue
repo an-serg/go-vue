@@ -3,7 +3,7 @@
     <div class="max-w-6xl mx-auto">
       
       <!-- Главная иконка — БОЛЬШАЯ -->
-      <BookIcon size="2xl" animated class="mx-auto mb-8 text-[#2C341B]" />
+      <BookIcon size="2xl" animated class="mx-auto mb-8 text" />
         
       <h1 class="text-5xl sm:text-7xl font-bold mb-4" :style="{ color: text.main }">
         BookTook
@@ -17,7 +17,7 @@
         Делись прочитанными книгами, пиши обзоры, находи единомышленников
       </p>
 
-      <AppButton :colors="button" @click="main_registration">Начать</AppButton>
+      <AppButton :colors="button" @click="go_to_main_registration">Начать</AppButton>
 
       <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 lg:sizeClass">
         
@@ -68,8 +68,8 @@ const text = darkText
 
 const router = useRouter()
 
-function main_registration(): void {
-  router.push('/register')
+function go_to_main_registration(): void {
+  router.push('/auth/register')
 }
 
 </script>
