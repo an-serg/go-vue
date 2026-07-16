@@ -14,7 +14,7 @@ export class RegisterDto {
 
   @ApiProperty({ 
     example: 'Will Smith', 
-    description: 'Имя пользователя'
+    description: 'Имя профиля'
   })
   @IsString()
   @MinLength(1)

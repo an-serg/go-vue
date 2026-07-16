@@ -1,9 +1,11 @@
-import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as argon2 from 'argon2';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
 import { RegisterDto } from '../users/dto/register.dto';
+import { LoginDto } from 'src/users/dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +24,7 @@ export class AuthService {
       where: { email: dto.email },
     });
     if (existingEmail) {
-      throw new BadRequestException('Email уже зарегестрирован. Попробуйте авторизоваться через Вход');
+      throw new BadRequestException('Email уже зарегестрирован');
     }
 
     const existingUsername = await this.userRepo.findOne({
@@ -35,17 +37,41 @@ export class AuthService {
     const user = this.userRepo.create(dto);
     await this.userRepo.save(user);
 
-    const payload = { sub: user.id, email: user.email, username: user.username };
+    const payload = { sub: user.id, email: user.email };
     const accessToken = this.jwtService.sign(payload);
 
     return { 
       message: 'Регистрация успешна',
       accessToken,
-      user: {
+      user: { 
         id: user.id,
-        username: user.username,
-        nickname: user.nick,
-        email: user.email,
+        email: user.email
+      },
+    };
+  }
+
+  async login(dto:LoginDto) {
+    const user = await this.userRepo.findOne({
+      where: { email: dto.email }
+    })
+    if (!user) {
+      throw new BadRequestException('Email ещё не зарегистрирован');
+    }
+    
+    const isPasswordValid = await argon2.verify( user.password, dto.password)
+    if (!isPasswordValid) {
+      throw new BadRequestException('Неправильный пароль');
+    }
+
+    const payload = { sub: user.id, email: user.email };
+    const accessToken = this.jwtService.sign(payload);
+
+    return { 
+      message: 'Вы успешно вошли!',
+      accessToken,
+      user: { 
+        id: user.id,
+        email: user.email
       },
     };
   }
