@@ -59,13 +59,15 @@
       <p v-if="errors.confirmPassword" class="text-red-600 text-sm mt-1">{{ errors.confirmPassword }}</p>
     </div>
     
-    <AppButton :colors="brownButton" type="submit" class="w-full justify-center mb-10">
-      Зарегистрироваться
-    </AppButton>
+    <div>
+      <AppButton :colors="brownButton" type="submit" class="w-full justify-center mt-3 block">
+        Зарегистрироваться
+      </AppButton>
 
-    <a @click="go_to_main_login" class="text-base sm:text-lg mb-10 max-w-2xl mx-auto md-4 cursor-pointer hover:opacity-60" :color="darkText.main">
-      Войти
-    </a>
+      <a @click="go_to_main_login" class="text-base mt-3 sm:text-lg max-w-2xl mx-auto md-4 cursor-pointer hover:opacity-60 block" :color="darkText.main">
+        Войти
+      </a>
+    </div>
     
   </form>
 </template>

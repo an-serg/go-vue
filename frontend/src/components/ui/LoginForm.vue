@@ -24,13 +24,15 @@
       <p v-if="errors.password" class="text-red-600 text-sm mt-1">{{ errors.password }}</p>
     </div>
     
-    <AppButton :colors="brownButton" type="submit" class="w-full justify-center mb-10">
-      Войти
-    </AppButton>
+    <div>
+      <AppButton :colors="brownButton" type="submit" class="w-full justify-center">
+        Войти
+      </AppButton>
 
-    <a @click="go_to_main_register" class="text-base sm:text-lg mb-10 max-w-2xl mx-auto cursor-pointer hover:opacity-60" :style="{ color: darkText.main }">
-      Зарегистрироваться
-    </a>
+      <a @click="go_to_main_register" class="text-base sm:text-lg max-w-2xl mt-3 mx-auto cursor-pointer hover:opacity-60 block" :style="{ color: darkText.main }">
+        Зарегистрироваться
+      </a>
+    </div>
   </form>
 </template>
 

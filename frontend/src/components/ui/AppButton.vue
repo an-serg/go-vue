@@ -21,6 +21,6 @@ const emit = defineEmits<{ click: [] }>()
 
 <style scoped>
 .app-button {
-  @apply inline-flex items-center px-8 py-3 text-lg font-medium rounded-full transition-all duration-300 shadow-xl hover:shadow-2xl;
+  @apply inline-flex items-center px-8 py-3 text-lg font-medium rounded-full transition-all duration-300 shadow-lg hover:shadow-xl;
 }
 </style>
