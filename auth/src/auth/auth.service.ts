@@ -16,10 +16,13 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    if (dto.password !== dto.confirmPassword) {
+    const existingUsername = await this.userRepo.findOne({
+      where: { username: dto.username },
+    });
+    if (existingUsername) {
       throw new BadRequestException({
-        field: 'confirmPassword',
-        message: 'Пароли не совпадают'
+        field: 'username',
+        message: 'Username уже занят'
       });
     }
 
@@ -33,13 +36,10 @@ export class AuthService {
       });
     }
 
-    const existingUsername = await this.userRepo.findOne({
-      where: { username: dto.username },
-    });
-    if (existingUsername) {
+    if (dto.password !== dto.confirmPassword) {
       throw new BadRequestException({
-        field: 'username',
-        message: 'Username уже занят'
+        field: 'confirmPassword',
+        message: 'Пароли не совпадают'
       });
     }
 

@@ -34,7 +34,7 @@ export interface LoginErrors {
   password: string
 }
 
-export type RegisterField = 'email' | 'password'
+export type RegisterField = 'nick' | 'username' | 'email' | 'password' | 'confirmPassword'
 
 export interface RegisterErrors {
   nick: string
