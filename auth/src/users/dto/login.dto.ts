@@ -6,13 +6,13 @@ export class LoginDto {
     example: "willsmith@gmail.ru",
     description: "Электронная почта пользователя"
   })
-  @IsEmail()
+  @IsEmail({}, { message: 'Введите корректный email' })
   email: string;
   
   @ApiProperty({
     example: "12345678",
     description: "Пароль пользователя"
   })
-  @IsString()
+  @IsString({ message: 'Пароль должен быть строкой' })
   password: string;
 }
