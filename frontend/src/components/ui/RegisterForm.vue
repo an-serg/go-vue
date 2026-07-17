@@ -60,7 +60,7 @@
     </div>
     
     <div>
-      <AppButton :colors="brownButton" type="submit" class="w-full justify-center mt-3 block">
+      <AppButton :colors="brownButton" type="submit" class="w-full justify-center">
         Зарегистрироваться
       </AppButton>
 
