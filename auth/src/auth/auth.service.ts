@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as argon2 from 'argon2';
+import * as fs from 'fs';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
@@ -46,7 +47,7 @@ export class AuthService {
     const user = this.userRepo.create(dto);
     await this.userRepo.save(user);
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, type: 'access'};
     const accessToken = this.jwtService.sign(payload);
 
     return { 

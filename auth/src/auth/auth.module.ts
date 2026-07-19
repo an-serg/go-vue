@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
+import * as fs from 'fs';
 import { User } from '../users/user.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -9,8 +10,12 @@ import { AuthService } from './auth.service';
   imports: [
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '15m' },
+      privateKey: fs.readFileSync(process.env.JWT_PRIVATE_KEY_PATH),
+      signOptions: { 
+        algorithm: 'RS256',
+        expiresIn: '15m',
+        issuer: 'auth',
+      }
     }),
   ],
   controllers: [AuthController],
