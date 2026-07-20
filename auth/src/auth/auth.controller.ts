@@ -10,6 +10,15 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() dto: RegisterDto, @Res() res:Response) {
+    const { accessToken } = await this.authService.register(dto);
+
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,      
+      secure: false,       // true только для HTTPS (в проде)
+      sameSite: 'strict',  // защита от CSRF
+      maxAge: 15 * 60 * 1000,
+    });
+
     return res.send({ message: 'True register' });
   }
 
@@ -19,12 +28,11 @@ export class AuthController {
 
     res.cookie('access_token', accessToken, {
       httpOnly: true,      
-      secure: false,       // true только для HTTPS (в проде)
-      sameSite: 'strict',  // защита от CSRF
-      maxAge: 15 * 60 * 1000, // 15 минут в мс
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000,
     });
 
-    // Отправляем ответ (обязательно с @Res()!)
     return res.send({ message: 'Logged in' });
   }
 }

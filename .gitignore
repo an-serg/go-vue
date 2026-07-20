@@ -1,8 +1,6 @@
 # === ENV файлы ===
 .env
-backend/.env
-frontend/.env
-nginx/.env
+.pem
 
 # === Docker тестовый ===
 docker-compose.test.yml
@@ -31,3 +29,4 @@ logs/
 fronend/node_modules/
 dist/
 build/
+.gitignore
