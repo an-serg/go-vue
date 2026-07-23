@@ -37,11 +37,13 @@
 </template>
 
 <script setup lang="ts">
+
 import { reactive } from 'vue'
 import AppButton from './AppButton.vue'
 import { brownButton, darkText } from '@/assets/styles/palette.ts'
 import type { LoginFormData, LoginField, LoginErrors } from '../../types/auth.ts'
 import { useRouter } from 'vue-router'
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 const router = useRouter()
 
@@ -60,9 +62,16 @@ async function submit(): Promise<void> {
   errors.password = ''
   
   try {
+    const fp = await FingerprintJS.load()
+    const fpResult = await fp.get()
+    const fingerprint = fpResult.visitorId
+
     const response = await fetch('/api/auth/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Fingerprint': fingerprint,
+       },
       body: JSON.stringify(form),
     })
 
@@ -72,7 +81,7 @@ async function submit(): Promise<void> {
       return
     }
 
-    const result = await response.json()
+    const loginResult = await response.json()
     router.push('/home')
   }
   catch (error) {

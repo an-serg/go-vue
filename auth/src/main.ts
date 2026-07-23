@@ -3,19 +3,20 @@ import { ValidationPipe,  BadRequestException} from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { config } from 'dotenv';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe({
-  exceptionFactory: (errors) => {
-    const result = errors.map(error => ({
-      field: error.property,  // ← имя поля
-      message: Object.values(error.constraints)[0]  // ← текст ошибки
-    }))
-    return new BadRequestException(result[0])  // ← только первая ошибка
-  }
-}))
+    exceptionFactory: (errors) => {
+      const result = errors.map(error => ({
+        field: error.property,  // ← имя поля
+        message: Object.values(error.constraints)[0]
+      }))
+      return new BadRequestException(result[0])
+    }
+  }))
 
   const config = new DocumentBuilder()
       .setTitle('BookTook Auth API')
@@ -23,9 +24,10 @@ async function bootstrap() {
       .setVersion('1.0')
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('auth/docs', app, document);
-
-    await app.listen(3001);
-  }
+    SwaggerModule.setup('/docs', app, document);
+    
+  app.use(cookieParser());
+  await app.listen(3001);
+}
 
 bootstrap();

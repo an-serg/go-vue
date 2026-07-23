@@ -30,3 +30,4 @@ fronend/node_modules/
 dist/
 build/
 .gitignore
+node_modules

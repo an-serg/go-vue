@@ -1,6 +1,7 @@
 import { All, Controller, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { HttpService } from '@nestjs/axios';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { lastValueFrom } from 'rxjs';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 
@@ -10,8 +11,11 @@ export class UsersProxyController {
   constructor(private readonly httpService: HttpService) {}
 
   @All('*')
-  async proxy(@Req() req: Request, @Res() res: Response) {
-    const user = req['user'];
+  async proxy(
+    @Req() req: Request, 
+    @Res() res: Response, 
+    @CurrentUser('sub') userId: string,
+  ) {
     const targetUrl = `http://users:3002${req.url}`;
 
     const response = await lastValueFrom(
@@ -20,9 +24,8 @@ export class UsersProxyController {
         url: targetUrl,
         data: req.body,
         headers: {
-          ...req.headers,
-          host: 'users:3002',
-          'x-user-id': user.sub,
+          'content-type': req.headers['content-type'],
+          'x-user-id': userId,
         },
       }),
     );
