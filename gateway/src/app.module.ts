@@ -4,6 +4,7 @@ import { HttpModule } from '@nestjs/axios';
 import * as fs from 'fs';
 import { AuthProxyController } from './proxy/auth-proxy.controller';
 import { UsersProxyController } from './proxy/users-proxy.controller';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -20,5 +21,6 @@ import { UsersProxyController } from './proxy/users-proxy.controller';
     AuthProxyController,
     UsersProxyController,
   ],
+  providers: [JwtAuthGuard],
 })
 export class AppModule {}

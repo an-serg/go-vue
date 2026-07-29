@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({
     exceptionFactory: (errors) => {
       const result = errors.map(error => ({
-        field: error.property,  // ← имя поля
+        field: error.property,
         message: Object.values(error.constraints)[0]
       }))
       return new BadRequestException(result[0])

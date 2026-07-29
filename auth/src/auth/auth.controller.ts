@@ -1,125 +1,62 @@
-import { Response } from 'express';
-import { Controller, Post, Body, Headers, Res, Req, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Headers, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
+import { AuthTokenService } from '../common/auth-token.service';
+import { AuthCookieService } from '../common/auth-cookie.service';
 import { RegisterDto } from '../users/dto/register.dto';
-import { LoginDto } from 'src/users/dto/login.dto';
-
-interface RequestWithCookies extends Request {
-  cookies?: { [key: string]: string };
-}
+import { LoginDto } from '../users/dto/login.dto';
 
 @Controller('')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private authTokenService: AuthTokenService,
+    private cookieService: AuthCookieService,
+  ) {}
 
   @Post('register')
   async register(
-    @Body() dto: RegisterDto, 
+    @Body() dto: RegisterDto,
     @Headers('x-fingerprint') fingerprint: string,
-    @Req() req: RequestWithCookies,
+    @Req() req: Request,
     @Res() res: Response,
   ) {
-    const { accessToken, refreshToken } = await this.authService.register(
-      dto,
+    const user = await this.authService.register(dto);
+    
+    await this.authTokenService.revokeByFingerprint(user.id, fingerprint);
+    
+    const { accessToken, refreshToken } = await this.authTokenService.createTokens(
+      user.id,
+      user.email,
       fingerprint,
       req.headers['user-agent'] || '',
     );
-
-    res.cookie('access_token', accessToken, {
-      httpOnly: true,      
-      secure: false,       // true только для HTTPS (в проде)
-      sameSite: 'strict',  // защита от CSRF
-      maxAge: 1 * 60 * 1000,
-    });
-
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'strict',
-      maxAge: 2 * 60 * 1000,
-    });
-
-    return res.send({ message: 'True register' });
+    
+    this.cookieService.setAuthCookies(res, accessToken, refreshToken);
+    
+    return res.send({ message: 'True register', user: { id: user.id } });
   }
 
   @Post('login')
   async login(
     @Body() dto: LoginDto,
     @Headers('x-fingerprint') fingerprint: string,
-    @Req() req: RequestWithCookies,
+    @Req() req: Request,
     @Res() res: Response,
   ) {
-    console.log('DEBUG fingerprint:', fingerprint);
-    console.log('DEBUG headers:', req.headers);
-    const { accessToken, refreshToken } = await this.authService.login(
-      dto, 
-      fingerprint, 
+    const user = await this.authService.login(dto);
+    
+    await this.authTokenService.revokeByFingerprint(user.id, fingerprint);
+    
+    const { accessToken, refreshToken } = await this.authTokenService.createTokens(
+      user.id,
+      user.email,
+      fingerprint,
       req.headers['user-agent'] || '',
     );
-
-    res.cookie('access_token', accessToken, {
-      httpOnly: true,      
-      secure: false,
-      sameSite: 'strict',
-      maxAge: 1 * 60 * 1000,
-    });
-
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'strict',
-      maxAge: 2 * 60 * 1000,
-    });
-
-
-    return res.send({ message: 'Logged in' });
-  }
-
-  @Post('refresh')
-  async refresh(
-    @Req() req: RequestWithCookies,
-    @Headers('x-fingerprint') fingerprint: string,
-    @Res() res: Response,
-  ) {
-    const refreshToken = req.cookies?.refresh_token;
-
-    if (!refreshToken) {
-      throw new UnauthorizedException('No refresh token');
-    }
-
-    const { newAccessToken, newRefreshToken } = await this.authService.refresh(refreshToken, fingerprint);
-
-    res.cookie('access_token', newAccessToken, {
-      httpOnly: true,      
-      secure: false,       // true только для HTTPS (в проде)
-      sameSite: 'strict',  // защита от CSRF
-      maxAge: 1 * 60 * 1000,
-    });
-
-    res.cookie('refresh_token', newRefreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'strict',
-      maxAge: 2 * 60 * 1000,
-    });
-
-    return res.send({ message: 'True refresh' });
-  }
-
-  @Post('logout')
-  async logout(
-    @Req() req: RequestWithCookies,
-    @Res() res: Response,
-  ) {
-    const refreshToken = req.cookies?.refresh_token;
-
-    if (refreshToken) {
-      await this.authService.logout(refreshToken);
-    }
     
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
-
-    return res.send({ message: 'Logged out' });
+    this.cookieService.setAuthCookies(res, accessToken, refreshToken);
+    
+    return res.send({ message: 'Logged in' });
   }
 }

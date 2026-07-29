@@ -5,7 +5,11 @@ import * as fs from 'fs';
 import { User } from '../users/user.entity';
 import { Session } from '../sessions/session.entity';
 import { AuthController } from './auth.controller';
+import { JwtController } from '../jwt/jwt.controller';
 import { AuthService } from './auth.service';
+import { JwtServiceAuth } from '../jwt/jwt.service';
+import { AuthTokenService } from '../common/auth-token.service';
+import { AuthCookieService } from '../common/auth-cookie.service';
 
 @Module({
   imports: [
@@ -23,7 +27,7 @@ import { AuthService } from './auth.service';
       },
     }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService],
+  controllers: [AuthController, JwtController],
+  providers: [AuthService, JwtServiceAuth, AuthTokenService, AuthCookieService],
 })
 export class AuthModule {}
