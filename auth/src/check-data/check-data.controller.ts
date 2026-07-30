@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { CheckDataService } from "./check-data.service"
 
-@Controller('check')
+@Controller('')
 export class CheckDataController {
   constructor(private checkDataService: CheckDataService) {}
 

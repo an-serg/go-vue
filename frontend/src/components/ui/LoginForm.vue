@@ -3,13 +3,19 @@
     <div>
       <label class="block text-sm font-medium text-[#2C341B] mb-1">Email</label>
       <input 
-        v-model="form.email" 
+        v-model="emailCheck.value" 
+        @blur="emailCheck.checkNow"
         type="email" 
         placeholder="anna@mail.ru"
         class="w-full px-4 py-3 rounded-xl bg-[#DDDFC2] border-2 text-[#2C341B] placeholder-[#94A59C] focus:outline-none transition-colors"
-        :class="errors.email ? 'border-red-500 focus:border-red-600' : 'border-[#94A59C] focus:border-[#688A65]'"
+        :class="errors.email ? 'border-red-500 focus:border-red-600' : emailCheck.error ? 'border-red-500 focus:border-red-600' : emailCheck.available === true ? 'border-green-500 focus:border-green-600' : emailCheck.checking ? 'border-blue-400 focus:border-blue-500' : 'border-[#94A59C] focus:border-[#688A65]'"
       >
-      <p v-if="errors.email" class="text-red-600 text-sm mt-1">{{ errors.email }}</p>
+      <p class="text-sm mt-1 h-5">
+        <span v-if="emailCheck.checking" class="text-blue-600">Проверяем...</span>
+        <span v-else-if="errors.email" class="text-red-600">{{ errors.email }}</span>
+        <span v-else-if="emailCheck.error" class="text-red-600">{{ emailCheck.error }}</span>
+        <span v-else-if="emailCheck.available === true" class="text-green-600">✓ Найден</span>
+      </p>
     </div>
     
     <div>
@@ -21,11 +27,13 @@
         class="w-full px-4 py-3 rounded-xl bg-[#DDDFC2] border-2 text-[#2C341B] placeholder-[#94A59C] focus:outline-none transition-colors"
         :class="errors.password ? 'border-red-500 focus:border-red-600' : 'border-[#94A59C] focus:border-[#688A65]'"
       >
-      <p v-if="errors.password" class="text-red-600 text-sm mt-1">{{ errors.password }}</p>
+      <p class="text-sm mt-1 h-5">
+        <span v-if="errors.password" class="text-red-600">{{ errors.password }}</span>
+      </p>
     </div>
     
     <div>
-      <AppButton :colors="brownButton" type="submit" class="w-full justify-center">
+      <AppButton :colors="brownButton" type="submit" class="w-full justify-center" :disabled="!canSubmit">
         Войти
       </AppButton>
 
@@ -37,15 +45,17 @@
 </template>
 
 <script setup lang="ts">
-
-import { reactive } from 'vue'
+import { reactive, computed, watch } from 'vue'
 import AppButton from './AppButton.vue'
 import { brownButton, darkText } from '@/assets/styles/palette.ts'
 import type { LoginFormData, LoginField, LoginErrors } from '../../types/auth.ts'
 import { useRouter } from 'vue-router'
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { useCheckAvailability } from '@/components/auth/сomposable/useCheckAvailability.ts'
 
 const router = useRouter()
+
+const emailCheck = useCheckAvailability('email', 'login')
 
 const form = reactive<LoginFormData>({
   email: '',
@@ -57,9 +67,17 @@ const errors = reactive<LoginErrors>({
   password: ''
 })
 
+watch(() => emailCheck.value, () => { errors.email = '' })
+
+const canSubmit = computed(() => emailCheck.available === true && !emailCheck.checking)
+
 async function submit(): Promise<void> {
   errors.email = ''
   errors.password = ''
+  
+  if (!canSubmit.value) return
+  
+  form.email = emailCheck.value
   
   try {
     const fp = await FingerprintJS.load()

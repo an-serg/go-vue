@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { JwtServiceAuth } from './jwt.service';
 import { AuthCookieService } from '../common/auth-cookie.service';
 
-@Controller('jwt')
+@Controller('')
 export class JwtController {
   constructor(
     private jwtServiceAuth: JwtServiceAuth,
