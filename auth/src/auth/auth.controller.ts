@@ -23,7 +23,9 @@ export class AuthController {
   ) {
     const user = await this.authService.register(dto);
     
-    await this.authTokenService.revokeByFingerprint(user.id, fingerprint);
+    //Left from existing session
+    await this.authTokenService.revokeSessionByFingerprint(user.id, fingerprint);
+    this.cookieService.clearAuthCookies(res);
     
     const { accessToken, refreshToken } = await this.authTokenService.createTokens(
       user.id,
@@ -46,7 +48,9 @@ export class AuthController {
   ) {
     const user = await this.authService.login(dto);
     
-    await this.authTokenService.revokeByFingerprint(user.id, fingerprint);
+    //Left from existing session
+    await this.authTokenService.revokeSessionByFingerprint(user.id, fingerprint);
+    this.cookieService.clearAuthCookies(res);
     
     const { accessToken, refreshToken } = await this.authTokenService.createTokens(
       user.id,

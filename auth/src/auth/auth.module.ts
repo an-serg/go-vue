@@ -10,6 +10,7 @@ import { AuthService } from './auth.service';
 import { JwtServiceAuth } from '../jwt/jwt.service';
 import { AuthTokenService } from '../common/auth-token.service';
 import { AuthCookieService } from '../common/auth-cookie.service';
+import { jwt_config } from 'src/config/jwt.config';
 
 @Module({
   imports: [
@@ -18,12 +19,12 @@ import { AuthCookieService } from '../common/auth-cookie.service';
       privateKey: fs.readFileSync(process.env.JWT_PRIVATE_KEY_PATH),
       publicKey: fs.readFileSync(process.env.JWT_PRIVATE_KEY_PATH.replace('private', 'public')),
       signOptions: { 
-        algorithm: 'RS256',
-        issuer: 'auth',
+        algorithm: jwt_config.algorithm,
+        issuer: jwt_config.issuer,
       },
       verifyOptions: {
-        algorithms: ['RS256'],
-        issuer: 'auth',
+        algorithms: [jwt_config.algorithm],
+        issuer: jwt_config.issuer,
       },
     }),
   ],

@@ -1,12 +1,24 @@
-import { All, Controller, Req, Res } from '@nestjs/common';
+import { All, Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+
+interface RequestWithUser extends
+Request {
+  user: { sub: string, email: string};
+}
 
 @Controller('auth')
 export class AuthProxyController {
   constructor(private readonly httpService: HttpService) {}
 
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async me(@Req() req: RequestWithUser) {
+    return { userId: req.user.sub, email: req.user.email };
+  }
+  
   @All('*')
   async proxy(@Req() req: Request, @Res() res: Response) {
     const targetUrl = `http://auth:3001${req.url.replace('/auth', '')}`;

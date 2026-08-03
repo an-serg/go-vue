@@ -9,7 +9,7 @@ import { Request } from 'express';
 
 interface JwtPayload {
   sub: string;
-  email?: string;
+  email: string;
   type: string;
   iat: number;
   exp: number;
@@ -35,15 +35,13 @@ export class JwtAuthGuard implements CanActivate {
         throw new UnauthorizedException('Invalid token type');
       }
 
-      if (payload.exp < Date.now() / 1000) {
-        throw new UnauthorizedException('Token expired');
-      }
+      (request as any).user = payload;
 
-      const request = context.switchToHttp().getRequest<any>();
       return true;
-    }
-    catch(error) {
-      if (error instanceof UnauthorizedException) { throw error }
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new UnauthorizedException('Invalid token');
     }
   }

@@ -7,6 +7,7 @@ import { JwtController } from './jwt.controller';
 import { JwtServiceAuth } from './jwt.service';
 import { AuthTokenService } from '../common/auth-token.service';
 import { AuthCookieService } from '../common/auth-cookie.service';
+import { jwt_config } from 'src/config/jwt.config';
 
 @Module({
   imports: [
@@ -14,8 +15,8 @@ import { AuthCookieService } from '../common/auth-cookie.service';
     JwtModule.register({
       publicKey: fs.readFileSync(process.env.JWT_PUBLIC_KEY_PATH),
       privateKey: fs.readFileSync(process.env.JWT_PRIVATE_KEY_PATH),
-      signOptions: { algorithm: 'RS256', issuer: 'auth' },
-      verifyOptions: { algorithms: ['RS256'], issuer: 'auth' },
+      signOptions: { algorithm: jwt_config.algorithm, issuer: jwt_config.issuer },
+      verifyOptions: { algorithms: [jwt_config.algorithm], issuer: jwt_config.issuer },
     }),
   ],
   controllers: [JwtController],

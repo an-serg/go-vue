@@ -50,7 +50,7 @@ import AppButton from './AppButton.vue'
 import { brownButton, darkText } from '@/assets/styles/palette.ts'
 import type { LoginFormData, LoginField, LoginErrors } from '../../types/auth.ts'
 import { useRouter } from 'vue-router'
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { useCheckAvailability } from '@/components/auth/сomposable/useCheckAvailability.ts'
 
 const router = useRouter()
@@ -83,9 +83,11 @@ async function submit(): Promise<void> {
     const fp = await FingerprintJS.load()
     const fpResult = await fp.get()
     const fingerprint = fpResult.visitorId
+    localStorage.setItem('fingerprint', fingerprint)
 
     const response = await fetch('/api/auth/login', {
       method: 'POST',
+      credentials: 'include',
       headers: { 
         'Content-Type': 'application/json',
         'X-Fingerprint': fingerprint,

@@ -2,11 +2,13 @@ import { Controller, Post, Req, Res, Headers, UnauthorizedException } from '@nes
 import { Request, Response } from 'express';
 import { JwtServiceAuth } from './jwt.service';
 import { AuthCookieService } from '../common/auth-cookie.service';
+import { AuthTokenService } from 'src/common/auth-token.service';
 
 @Controller('')
 export class JwtController {
   constructor(
     private jwtServiceAuth: JwtServiceAuth,
+    private AuthTokenService: AuthTokenService,
     private cookieService: AuthCookieService,
   ) {}
 
@@ -21,10 +23,11 @@ export class JwtController {
       throw new UnauthorizedException('No refresh token');
     }
 
-    const { accessToken, refreshToken: newRefreshToken } = await this.jwtServiceAuth.verifyAndRotate(
-      refreshToken,
-      fingerprint,
-      req.headers['user-agent'] || '',
+    const { accessToken, refreshToken: newRefreshToken } =
+      await this.jwtServiceAuth.refreshToken(
+        refreshToken,
+        fingerprint,
+        req.headers['user-agent'] || '',
     );
 
     this.cookieService.setAuthCookies(res, accessToken, newRefreshToken);
@@ -32,10 +35,10 @@ export class JwtController {
   }
 
   @Post('logout')
-  async logout(@Req() req: Request, @Res() res: Response) {
+  async logout(@Req() req: Request, @Res() res: Response, @Headers('x-fingerprint') fingerprint: string) {
     const refreshToken = req.cookies?.refresh_token;
     if (refreshToken) {
-      await this.jwtServiceAuth.revokeSession(refreshToken);
+      await this.AuthTokenService.revokeSessionByToken(refreshToken);
     }
 
     this.cookieService.clearAuthCookies(res);
