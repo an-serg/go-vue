@@ -1,0 +1,33 @@
+# === ENV файлы ===
+.env
+.pem
+
+# === Docker тестовый ===
+docker-compose.test.yml
+
+# === Docker данные ===
+pg_test_data/
+/srv/
+*.local
+
+# === IDE ===
+.idea/
+.vscode/
+frontend/vscode/
+*.swp
+*.swo
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Логи ===
+*.log
+logs/
+
+# === Зависимости ===
+fronend/node_modules/
+dist/
+build/
+.gitignore
+node_modules

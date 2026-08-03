@@ -32,6 +32,7 @@
     "eslint-plugin-vue": "~10.9.2",
     "jiti": "^2.7.0",
     "npm-run-all2": "^9.0.2",
+    "@fingerprintjs/fingerprintjs": "^4.0.0",
     "oxlint": "~1.69.0",
     "postcss": "^8.5.16",
     "prettier": "3.8.4",

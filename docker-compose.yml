@@ -1,20 +1,55 @@
-version: '3.8'
-
 services:
+  auth:
+    build: ./auth
+    expose:
+      - "3001"
+    env_file:
+      - ./auth/.env
+    networks:
+      - postgre_booktook_net
+
   backend:
     build: ./backend
+    env_file:
+      - ./backend/.env
     expose:
       - "8080"
+    networks:
+      - postgre_booktook_net
+    depends_on:
+      - auth
+
+  gateway:
+    build: ./gateway
+    expose:
+      - "3000"
+    environment:
+      - JWT_PUBLIC_KEY_PATH=./keys/public.pem
+    volumes:
+      - ./gateway/keys/public.pem:/app/keys/public.pem:ro
+    networks:
+      - postgre_booktook_net
+    depends_on:
+      - auth
 
   frontend:
     build: ./frontend
     expose:
       - "80"
+    networks:
+      - postgre_booktook_net
 
   nginx:
     build: ./nginx
     ports:
       - "80:80"
     depends_on:
+      - auth
       - backend
       - frontend
+    networks:
+      - postgre_booktook_net
+
+networks:
+  postgre_booktook_net:
+    external: true  
