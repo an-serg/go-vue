@@ -43,10 +43,15 @@ services:
     build: ./nginx
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - auth
       - backend
       - frontend
+      - gateway
     networks:
       - postgre_booktook_net
 

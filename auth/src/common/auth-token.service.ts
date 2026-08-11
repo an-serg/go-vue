@@ -17,12 +17,12 @@ export class AuthTokenService {
   async createTokens(userId: string, email: string, fingerprint: string, userAgent: string) {
     const accessToken = this.jwtService.sign(
       { sub: userId, email, type: 'access' },
-      { expiresIn: token_config.accessTtlMs },
+      { expiresIn: token_config.accessTtl },
     );
 
     const refreshToken = this.jwtService.sign(
       { sub: userId, email, type: 'refresh' },
-      { expiresIn: token_config.refreshTtlMs },
+      { expiresIn: token_config.refreshTtl },
     );
 
     const refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');

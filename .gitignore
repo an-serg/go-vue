@@ -31,3 +31,9 @@ dist/
 build/
 .gitignore
 node_modules
+auth/keys/private.pem
+auth/keys/public.pem
+gateway/keys/public.pem
+certbot/
+docker-compose.local.yml
+nginx/nginx.conf
