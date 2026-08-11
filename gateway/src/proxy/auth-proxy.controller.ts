@@ -39,6 +39,11 @@ export class AuthProxyController {
 
       res.status(response.status);
 
+      const contentType = response.headers['content-type'];
+      if (typeof contentType === 'string') {
+        res.setHeader('content-type', contentType);
+      }
+
       const setCookie = response.headers['set-cookie'];
       if (setCookie) {
         res.setHeader('Set-Cookie', setCookie);

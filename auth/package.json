@@ -2,7 +2,11 @@
   "name": "auth",
   "version": "1.0.0",
   "scripts": {
-    "start:dev": "nest start --watch"
+    "start:dev": "nest start --watch",
+    "migration:generate": "typeorm-ts-node-commonjs migration:generate -d src/data-source.ts",
+    "migration:run": "typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
+    "migration:show": "typeorm-ts-node-commonjs migration:show -d src/data-source.ts",
+    "schema:drop": "typeorm-ts-node-commonjs schema:drop -d src/data-source.ts"
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^4.0.0",
@@ -25,6 +29,7 @@
     "@nestjs/cli": "^10.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/jsonwebtoken": "^9.0.0",
+    "ts-node": "^10.9.2",
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
   }
