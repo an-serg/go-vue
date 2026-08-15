@@ -4,7 +4,7 @@ import { SessionService } from './session.service';
 import { CookieService } from './cookie.service';
 import { TokenService } from './token.service';
 
-@Controller('')
+@Controller('auth')
 export class SessionController {
   constructor(
     private sessionService: SessionService,

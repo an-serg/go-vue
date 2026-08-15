@@ -16,7 +16,7 @@ export class UsersProxyController {
     @Res() res: Response,
     @CurrentUser('sub') userId: string,
   ) {
-    const targetUrl = `http://users:3002${req.url}`;
+    const targetUrl = `http://auth:3001${req.url}`;
 
     try {
       const response = await lastValueFrom(

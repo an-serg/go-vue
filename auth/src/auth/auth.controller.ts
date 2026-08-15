@@ -6,7 +6,7 @@ import { CookieService } from './cookie.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
-@Controller('')
+@Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
