@@ -98,8 +98,10 @@ import type { RegisterFormData, RegisterErrors, RegisterField } from '../../type
 import { useRouter } from 'vue-router'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { useCheckAvailability } from '@/components/auth/сomposable/useCheckAvailability.ts'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const usernameCheck = useCheckAvailability('username')
 const emailCheck = useCheckAvailability('email')
@@ -174,7 +176,7 @@ async function submit(): Promise<void> {
       return
     }
     
-    const result = await response.json()
+    await userStore.load()
     router.push('/home')
   } 
   catch (error) {

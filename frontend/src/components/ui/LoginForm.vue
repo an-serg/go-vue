@@ -52,8 +52,10 @@ import type { LoginFormData, LoginField, LoginErrors } from '../../types/auth.ts
 import { useRouter } from 'vue-router'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { useCheckAvailability } from '@/components/auth/сomposable/useCheckAvailability.ts'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const emailCheck = useCheckAvailability('email', 'login')
 
@@ -101,7 +103,7 @@ async function submit(): Promise<void> {
       return
     }
 
-    const loginResult = await response.json()
+    await userStore.load()
     router.push('/home')
   }
   catch (error) {

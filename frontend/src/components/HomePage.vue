@@ -5,16 +5,20 @@
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <p class="text-[#688A65] text-lg mb-1">{{ greeting }},</p>
-          <h1 class="text-4xl md:text-5xl font-bold tracking-tight">booklover_anna ✨</h1>
+          <h1 class="text-4xl md:text-5xl font-bold tracking-tight">{{ displayName }} ✨</h1>
           <p class="text-[#2C341B]/70 mt-3 h-6 text-lg font-medium">{{ typewriterText }}</p>
         </div>
         <div class="flex items-center gap-3">
           <div class="bg-[#2C341B] text-[#DDDFC2] px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2">
             <span class="animate-pulse">🔥</span> 12 дней
           </div>
-          <div class="w-12 h-12 rounded-full bg-[#688A65] flex items-center justify-center text-white font-bold text-lg shadow-lg">
-            АК
-          </div>
+          <RouterLink
+            to="/profile"
+            aria-label="Мой профиль"
+            class="w-12 h-12 rounded-full bg-[#688A65] flex items-center justify-center text-white font-bold text-lg shadow-lg hover:ring-2 hover:ring-[#2C341B]/30 transition-all"
+          >
+            {{ initials }}
+          </RouterLink>
         </div>
       </div>
     </div>
@@ -123,6 +127,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
+
+const { displayName, initials } = storeToRefs(useUserStore())
 
 const greeting = ref('')
 const typewriterText = ref('')
