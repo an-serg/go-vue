@@ -48,9 +48,12 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.userRepo.findOne({
-      where: { email: dto.email },
-    });
+    const user = await this.userRepo
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email: dto.email })
+      .addSelect('user.password')
+      .getOne();
+      
     if (!user) {
       throw new UnauthorizedException({
         field: 'email',
@@ -65,7 +68,8 @@ export class AuthService {
         message: 'Неверный пароль',
       });
     }
-
+    
+    await this.userRepo.update(user.id, { last_login: new Date() });
     return user;
   }
 }

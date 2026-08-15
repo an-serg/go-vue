@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn } from 'typeorm';
 import * as argon2 from 'argon2';
 
 @Entity('users')
@@ -15,8 +15,26 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ default: false })
+  email_verified: boolean;
+
+  @Column({select: false})
   password: string;
+
+  @Column({ nullable: true })
+  bio: string;
+
+  @Column({ nullable: true })
+  avatar_url: string;
+
+  @Column({ type: 'jsonb', default: () => "'{}'" })
+  settings: Record<string, any>;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @Column({ nullable: true })
+  last_login: Date;
 
   @BeforeInsert()
   async hashPassword() {
