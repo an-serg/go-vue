@@ -2,9 +2,9 @@ import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as argon2 from 'argon2';
-import { User } from '../users/user.entity';
-import { RegisterDto } from '../users/dto/register.dto';
-import { LoginDto } from '../users/dto/login.dto';
+import { User } from '../users/entities/user.entity';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -48,9 +48,12 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.userRepo.findOne({
-      where: { email: dto.email },
-    });
+    const user = await this.userRepo
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email: dto.email })
+      .addSelect('user.password')
+      .getOne();
+      
     if (!user) {
       throw new UnauthorizedException({
         field: 'email',
@@ -65,7 +68,8 @@ export class AuthService {
         message: 'Неверный пароль',
       });
     }
-
+    
+    await this.userRepo.update(user.id, { last_login: new Date() });
     return user;
   }
 }

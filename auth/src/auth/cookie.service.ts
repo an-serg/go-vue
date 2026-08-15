@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
-import { cookie_config } from 'src/config/cookie.config';
-import { token_config } from 'src/config/token.config';
+import { cookie_config } from '../config/cookie.config';
+import { token_config } from '../config/token.config';
 
 @Injectable()
-export class AuthCookieService {
+export class CookieService {
   setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
     res.cookie('access_token', accessToken, {
       httpOnly: cookie_config.httpOnly,

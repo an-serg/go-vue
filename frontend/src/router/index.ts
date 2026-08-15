@@ -3,7 +3,8 @@ import MainRegisterView from '@/components/auth/MainRegisterView.vue'
 import MainDescription from '@/components/MainDescription.vue'
 import MainLoginView from '@/components/auth/MainLoginView.vue'
 import HomePage from '@/components/HomePage.vue'
-import { useAuth } from '@/composables/useAuth'
+import ProfilePage from '@/components/profile/ProfilePage.vue'
+import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +29,11 @@ const router = createRouter({
       name: 'main_home_page',
       component: HomePage,
     },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfilePage,
+    },
   ],
 })
 
@@ -42,17 +48,10 @@ router.beforeEach(async (to) => {
     return true
   }
 
-  const auth = useAuth()
+  const user = useUserStore()
+  await user.ensureLoaded()
 
-  if (!auth.checked.value) {
-    await auth.checkAuth()
-  }
-
-  if (auth.isAuthenticated.value) {
-    return true
-  }
-
-  return '/auth/login'
+  return user.isAuthenticated ? true : '/auth/login'
 })
 
 export default router

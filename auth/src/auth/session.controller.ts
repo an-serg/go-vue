@@ -1,15 +1,15 @@
 import { Controller, Post, Req, Res, Headers, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { JwtServiceAuth } from './jwt.service';
-import { AuthCookieService } from '../common/auth-cookie.service';
-import { AuthTokenService } from 'src/common/auth-token.service';
+import { SessionService } from './session.service';
+import { CookieService } from './cookie.service';
+import { TokenService } from './token.service';
 
-@Controller('')
-export class JwtController {
+@Controller('auth')
+export class SessionController {
   constructor(
-    private jwtServiceAuth: JwtServiceAuth,
-    private AuthTokenService: AuthTokenService,
-    private cookieService: AuthCookieService,
+    private sessionService: SessionService,
+    private tokenService: TokenService,
+    private cookieService: CookieService,
   ) {}
 
   @Post('refresh')
@@ -24,7 +24,7 @@ export class JwtController {
     }
 
     const { accessToken, refreshToken: newRefreshToken } =
-      await this.jwtServiceAuth.refreshToken(
+      await this.sessionService.refreshToken(
         refreshToken,
         fingerprint,
         req.headers['user-agent'] || '',
@@ -38,7 +38,7 @@ export class JwtController {
   async logout(@Req() req: Request, @Res() res: Response, @Headers('x-fingerprint') fingerprint: string) {
     const refreshToken = req.cookies?.refresh_token;
     if (refreshToken) {
-      await this.AuthTokenService.revokeSessionByToken(refreshToken);
+      await this.tokenService.revokeSessionByToken(refreshToken);
     }
 
     this.cookieService.clearAuthCookies(res);

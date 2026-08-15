@@ -21,7 +21,7 @@ export class AuthProxyController {
   
   @All('*')
   async proxy(@Req() req: Request, @Res() res: Response) {
-    const targetUrl = `http://auth:3001${req.url.replace('/auth', '')}`;
+    const targetUrl = `http://auth:3001${req.url}`;
 
     try {
       const response = await lastValueFrom(
@@ -38,6 +38,11 @@ export class AuthProxyController {
       );
 
       res.status(response.status);
+
+      const contentType = response.headers['content-type'];
+      if (typeof contentType === 'string') {
+        res.setHeader('content-type', contentType);
+      }
 
       const setCookie = response.headers['set-cookie'];
       if (setCookie) {
