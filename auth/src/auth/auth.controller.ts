@@ -1,17 +1,17 @@
 import { Controller, Post, Body, Headers, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { AuthTokenService } from '../common/auth-token.service';
-import { AuthCookieService } from '../common/auth-cookie.service';
-import { RegisterDto } from '../users/dto/register.dto';
-import { LoginDto } from '../users/dto/login.dto';
+import { TokenService } from './token.service';
+import { CookieService } from './cookie.service';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('')
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private authTokenService: AuthTokenService,
-    private cookieService: AuthCookieService,
+    private tokenService: TokenService,
+    private cookieService: CookieService,
   ) {}
 
   @Post('register')
@@ -23,11 +23,10 @@ export class AuthController {
   ) {
     const user = await this.authService.register(dto);
     
-    //Left from existing session
-    await this.authTokenService.revokeSessionByFingerprint(user.id, fingerprint);
+    await this.tokenService.revokeSessionByFingerprint(user.id, fingerprint);
     this.cookieService.clearAuthCookies(res);
     
-    const { accessToken, refreshToken } = await this.authTokenService.createTokens(
+    const { accessToken, refreshToken } = await this.tokenService.createTokens(
       user.id,
       user.email,
       fingerprint,
@@ -48,11 +47,10 @@ export class AuthController {
   ) {
     const user = await this.authService.login(dto);
     
-    //Left from existing session
-    await this.authTokenService.revokeSessionByFingerprint(user.id, fingerprint);
+    await this.tokenService.revokeSessionByFingerprint(user.id, fingerprint);
     this.cookieService.clearAuthCookies(res);
     
-    const { accessToken, refreshToken } = await this.authTokenService.createTokens(
+    const { accessToken, refreshToken } = await this.tokenService.createTokens(
       user.id,
       user.email,
       fingerprint,

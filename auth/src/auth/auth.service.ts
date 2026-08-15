@@ -2,9 +2,9 @@ import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as argon2 from 'argon2';
-import { User } from '../users/user.entity';
-import { RegisterDto } from '../users/dto/register.dto';
-import { LoginDto } from '../users/dto/login.dto';
+import { User } from '../users/entities/user.entity';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {

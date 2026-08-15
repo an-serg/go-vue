@@ -2,12 +2,12 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { token_config } from 'src/config/token.config';
+import { token_config } from '../config/token.config';
 import * as crypto from 'crypto';
-import { Session } from '../sessions/session.entity';
+import { Session } from './entities/session.entity';
 
 @Injectable()
-export class AuthTokenService {
+export class TokenService {
   constructor(
     private jwtService: JwtService,
     @InjectRepository(Session)
@@ -54,7 +54,6 @@ export class AuthTokenService {
       const refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
       const fingerprintHash = crypto.createHash('sha256').update(fingerprint).digest('hex');
 
-      // 2. Ищем сессию в БД
       const session = await this.sessionRepo.findOne({
         where: { refresh_token_hash: refreshTokenHash },
       });
@@ -81,13 +80,11 @@ export class AuthTokenService {
       return payload;
   }
 
-  // Удалить сессию с этого устройства (при login/register)
   async revokeSessionByFingerprint(userId: string, fingerprint: string) {
     const fingerprintHash = crypto.createHash('sha256').update(fingerprint).digest('hex');
     await this.sessionRepo.delete({ user_id: userId, fingerprint_hash: fingerprintHash });
   }
 
-  // Удалить сессию по токену (при logout)
   async revokeSessionByToken(refreshToken: string) {
     const hash = crypto.createHash('sha256').update(refreshToken).digest('hex');
     await this.sessionRepo.delete({ refresh_token_hash: hash });
