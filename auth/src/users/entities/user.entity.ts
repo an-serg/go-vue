@@ -36,6 +36,12 @@ export class User {
   @Column({ nullable: true })
   last_login: Date;
 
+  @Column({ nullable: true })
+  registration_ip: string;
+
+  @Column({ nullable: true })
+  last_login_ip: string;
+
   @BeforeInsert()
   async hashPassword() {
     this.password = await argon2.hash(this.password);

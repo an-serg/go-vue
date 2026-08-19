@@ -13,7 +13,7 @@ export class AuthService {
     private userRepo: Repository<User>,
   ) {}
 
-  async register(dto: RegisterDto) {
+  async register(dto: RegisterDto, ip: string) {
     const existingUsername = await this.userRepo.findOne({
       where: { username: dto.username },
     });
@@ -42,12 +42,13 @@ export class AuthService {
     }
 
     const user = this.userRepo.create(dto);
+    user.registration_ip = ip;
     await this.userRepo.save(user);
 
     return user;
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto, ip: string) {
     const user = await this.userRepo
       .createQueryBuilder('user')
       .where('user.email = :email', { email: dto.email })
@@ -69,7 +70,7 @@ export class AuthService {
       });
     }
     
-    await this.userRepo.update(user.id, { last_login: new Date() });
+    await this.userRepo.update(user.id, { last_login: new Date(), last_login_ip: ip });
     return user;
   }
 }

@@ -25,7 +25,7 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const user = await this.authService.register(dto);
+    const user = await this.authService.register(dto, ip);
     
     await this.tokenService.revokeSessionByFingerprint(user.id, fingerprint);
     this.cookieService.clearAuthCookies(res);
@@ -51,7 +51,7 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const user = await this.authService.login(dto);
+    const user = await this.authService.login(dto, ip);
     
     await this.tokenService.revokeSessionByFingerprint(user.id, fingerprint);
     this.cookieService.clearAuthCookies(res);
