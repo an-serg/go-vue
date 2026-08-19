@@ -5,6 +5,8 @@ import { TokenService } from './token.service';
 import { CookieService } from './cookie.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UseGuards } from '@nestjs/common';
+import { LoginThrottlerGuard } from './login-throttler.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -15,9 +17,11 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @UseGuards(LoginThrottlerGuard)
   async register(
     @Body() dto: RegisterDto,
     @Headers('x-fingerprint') fingerprint: string,
+    @Headers('x-real-ip') ip: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -39,9 +43,11 @@ export class AuthController {
   }
 
   @Post('login')
+  @UseGuards(LoginThrottlerGuard)
   async login(
     @Body() dto: LoginDto,
     @Headers('x-fingerprint') fingerprint: string,
+    @Headers('x-real-ip') ip: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

@@ -1,5 +1,13 @@
 <template>
   <form class="space-y-6" @submit.prevent="submit">    
+    <div v-if="onCooldown" class="bg-amber-50 border border-amber-300 rounded-xl p-4">
+      <p class="font-semibold text-amber-900">{{ cooldownMessage || 'Слишком много попыток входа' }}</p>
+      <p class="text-sm text-amber-800/80 mt-1">Попробуйте через {{ cooldownLabel }}</p>
+      <a @click="goRecover" class="inline-block mt-2 text-sm font-medium text-amber-900 underline cursor-pointer hover:opacity-70">
+        Восстановить пароль
+      </a>
+    </div>
+
     <div>
       <label class="block text-sm font-medium text-[#2C341B] mb-1">Email</label>
       <input 
@@ -33,7 +41,7 @@
     </div>
     
     <div>
-      <AppButton :colors="brownButton" type="submit" class="w-full justify-center" :disabled="!canSubmit">
+      <AppButton :colors="brownButton" type="submit" class="w-full justify-center" :disabled="!canSubmit || onCooldown">
         Войти
       </AppButton>
 
@@ -45,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, watch } from 'vue'
+import { reactive, computed, watch, ref, onUnmounted } from 'vue'
 import AppButton from './AppButton.vue'
 import { brownButton, darkText } from '@/assets/styles/palette.ts'
 import type { LoginFormData, LoginField, LoginErrors } from '../../types/auth.ts'
@@ -73,11 +81,50 @@ watch(() => emailCheck.value, () => { errors.email = '' })
 
 const canSubmit = computed(() => emailCheck.available === true && !emailCheck.checking)
 
+const cooldownUntil = ref(Number(localStorage.getItem('loginCooldownUntil')) || 0)
+const now = ref(Date.now())
+const cooldownMessage = ref('')
+let cooldownTimer: ReturnType<typeof setInterval> | undefined
+
+const cooldownRemaining = computed(() => Math.max(0, Math.ceil((cooldownUntil.value - now.value) / 1000)))
+const onCooldown = computed(() => cooldownRemaining.value > 0)
+const cooldownLabel = computed(() => {
+  const total = cooldownRemaining.value
+  const m = Math.floor(total / 60)
+  const s = total % 60
+  return `${m}:${s.toString().padStart(2, '0')}`
+})
+
+function startCooldownTimer(): void {
+  if (cooldownTimer) return
+  cooldownTimer = setInterval(() => {
+    now.value = Date.now()
+    if (cooldownRemaining.value <= 0 && cooldownTimer) {
+      clearInterval(cooldownTimer)
+      cooldownTimer = undefined
+    }
+  }, 1000)
+}
+
+function triggerCooldown(retryAfter: number, message: string): void {
+  cooldownUntil.value = Date.now() + retryAfter * 1000
+  cooldownMessage.value = message
+  localStorage.setItem('loginCooldownUntil', String(cooldownUntil.value))
+  startCooldownTimer()
+}
+
+function goRecover(): void {
+  router.push('/auth/recover')
+}
+
+if (onCooldown.value) startCooldownTimer()
+onUnmounted(() => { if (cooldownTimer) clearInterval(cooldownTimer) })
+
 async function submit(): Promise<void> {
   errors.email = ''
   errors.password = ''
   
-  if (!canSubmit.value) return
+  if (!canSubmit.value || onCooldown.value) return
   
   form.email = emailCheck.value
   
@@ -96,6 +143,12 @@ async function submit(): Promise<void> {
        },
       body: JSON.stringify(form),
     })
+
+    if (response.status === 429) {
+      const data = await response.json() as { message: string; retryAfter: number }
+      triggerCooldown(data.retryAfter, data.message)
+      return
+    }
 
     if (!response.ok) {
       const error = await response.json() as { field: LoginField; message: string }

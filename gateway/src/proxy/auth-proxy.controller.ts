@@ -32,6 +32,7 @@ export class AuthProxyController {
           headers: {
             'content-type': req.headers['content-type'] || 'application/json',
             'x-fingerprint': req.headers['x-fingerprint'] as string || '',
+            'x-real-ip': req.headers['x-real-ip'] as string || '',
             'cookie': req.headers['cookie'] || '',
           },
         }),
