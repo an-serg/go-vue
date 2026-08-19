@@ -1,0 +1,1 @@
+export const DEFAULT_SETTINGS = { language: 'ru', emailNotifications: false };
