@@ -1,7 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AvailabilityService } from './availability.service';
+import { THROTTLE } from 'src/config/limit.config';
 
 @Controller('auth')
+@Throttle({ default: THROTTLE.availability })
 export class AvailabilityController {
   constructor(private availabilityService: AvailabilityService) {}
 

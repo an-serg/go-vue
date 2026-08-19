@@ -1,16 +1,16 @@
 import { Injectable, ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { auth_config } from '../config/auth-limit.config';
+import { THROTTLE } from 'src/config/limit.config';
 
 @Injectable()
-export class LoginThrottlerGuard extends ThrottlerGuard {
+export class AppThrottlerGuard extends ThrottlerGuard {
   protected async throwThrottlingException(
     _context: ExecutionContext,
     detail?: { timeToExpire?: number },
   ): Promise<void> {
-    const retryAfter = detail?.timeToExpire ? Math.ceil(detail.timeToExpire) : auth_config.ttlS;
+    const retryAfter = detail?.timeToExpire ? Math.ceil(detail.timeToExpire) : THROTTLE.default.ttl / 1000;
     throw new HttpException(
-      { message: 'Слишком много попыток входа', retryAfter },
+      { message: 'Слишком много запросов, попробуйте позже', retryAfter },
       HttpStatus.TOO_MANY_REQUESTS,
     );
   }

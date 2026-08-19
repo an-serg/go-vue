@@ -56,17 +56,17 @@ export class AuthService {
       .getOne();
       
     if (!user) {
-      throw new UnauthorizedException({
-        field: 'email',
-        message: 'Пользователь не найден',
+      throw new UnauthorizedException({ 
+        field: 'password', 
+        message: 'Неверный email или пароль' 
       });
     }
 
     const valid = await argon2.verify(user.password, dto.password);
     if (!valid) {
-      throw new UnauthorizedException({
-        field: 'password',
-        message: 'Неверный пароль',
+      throw new UnauthorizedException({ 
+        field: 'password', 
+        message: 'Неверный email или пароль' 
       });
     }
     

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { LoginThrottlerGuard } from './login-throttler.guard';
+import { AppThrottlerGuard } from './app-throttler.guard';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import * as fs from 'fs';
@@ -15,7 +16,7 @@ import { TokenService } from './token.service';
 import { CookieService } from './cookie.service';
 import { AvailabilityService } from './availability.service';
 import { jwt_config } from '../config/jwt.config';
-import { auth_config } from '../config/auth-limit.config';
+import { THROTTLE } from '../config/limit.config';
 
 @Module({
   imports: [
@@ -33,12 +34,22 @@ import { auth_config } from '../config/auth-limit.config';
       },
     }),
     ThrottlerModule.forRoot([{
-      ttl: auth_config.ttl, 
-      limit: auth_config.limit,
+      ...THROTTLE.default,
       getTracker: (req: Record<string, any>) => (req.headers['x-real-ip'] as string) || req.ip,
     }]),
   ],
-  controllers: [AuthController, SessionController, AvailabilityController],
-  providers: [AuthService, SessionService, TokenService, CookieService, AvailabilityService, LoginThrottlerGuard],
+  controllers: [
+    AuthController, 
+    SessionController, 
+    AvailabilityController
+  ],
+  providers: [
+    AuthService,
+    SessionService,
+    TokenService,
+    CookieService,
+    AvailabilityService,
+    { provide: APP_GUARD, useClass: AppThrottlerGuard },
+  ],
 })
 export class AuthModule {}
