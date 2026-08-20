@@ -96,7 +96,7 @@ import AppButton from './AppButton.vue'
 import { brownButton, darkText } from '@/assets/styles/palette.ts'
 import type { RegisterFormData, RegisterErrors, RegisterField } from '../../types/auth'
 import { useRouter } from 'vue-router'
-import FingerprintJS from '@fingerprintjs/fingerprintjs'
+import { getFingerprint } from '@/composables/useFingerprint'
 import { useCheckAvailability } from '@/components/auth/сomposable/useCheckAvailability.ts'
 import { useUserStore } from '@/stores/user'
 
@@ -155,10 +155,7 @@ async function submit(): Promise<void> {
   if (!canSubmit.value) return
   
   try {
-    const fp = await FingerprintJS.load()
-    const fpResult = await fp.get()
-    const fingerprint = fpResult.visitorId
-    localStorage.setItem('fingerprint', fingerprint)
+    const fingerprint = await getFingerprint()
 
     const response = await fetch('/api/auth/register', {
       method: 'POST',
