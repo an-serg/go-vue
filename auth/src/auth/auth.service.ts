@@ -13,7 +13,7 @@ export class AuthService {
     private userRepo: Repository<User>,
   ) {}
 
-  async register(dto: RegisterDto) {
+  async register(dto: RegisterDto, ip: string) {
     const existingUsername = await this.userRepo.findOne({
       where: { username: dto.username },
     });
@@ -42,12 +42,13 @@ export class AuthService {
     }
 
     const user = this.userRepo.create(dto);
+    user.registration_ip = ip;
     await this.userRepo.save(user);
 
     return user;
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto, ip: string) {
     const user = await this.userRepo
       .createQueryBuilder('user')
       .where('user.email = :email', { email: dto.email })
@@ -55,21 +56,21 @@ export class AuthService {
       .getOne();
       
     if (!user) {
-      throw new UnauthorizedException({
-        field: 'email',
-        message: 'Пользователь не найден',
+      throw new UnauthorizedException({ 
+        field: 'password', 
+        message: 'Неверный email или пароль' 
       });
     }
 
     const valid = await argon2.verify(user.password, dto.password);
     if (!valid) {
-      throw new UnauthorizedException({
-        field: 'password',
-        message: 'Неверный пароль',
+      throw new UnauthorizedException({ 
+        field: 'password', 
+        message: 'Неверный email или пароль' 
       });
     }
     
-    await this.userRepo.update(user.id, { last_login: new Date() });
+    await this.userRepo.update(user.id, { last_login: new Date(), last_login_ip: ip });
     return user;
   }
 }
