@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, Get } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppThrottlerGuard } from './app-throttler.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
+import { MailService } from '../mail/mail.service';
 import * as fs from 'fs';
 import { User } from '../users/entities/user.entity';
 import { Session } from './entities/session.entity';
@@ -48,6 +49,7 @@ import { THROTTLE } from '../config/limit.config';
     SessionService,
     TokenService,
     CookieService,
+    MailService,
     AvailabilityService,
     { provide: APP_GUARD, useClass: AppThrottlerGuard },
   ],

@@ -1,6 +1,7 @@
-import { Controller, Post, Body, Headers, Req, Res } from '@nestjs/common';
+import { Controller, Post, Get, Body, Headers, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
+import { MailService } from 'src/mail/mail.service';
 import { TokenService } from './token.service';
 import { CookieService } from './cookie.service';
 import { RegisterDto } from './dto/register.dto';
@@ -14,7 +15,17 @@ export class AuthController {
     private authService: AuthService,
     private tokenService: TokenService,
     private cookieService: CookieService,
+    private mailService: MailService,
   ) {}
+
+  @Get('mailtest')
+  async mailtest() {
+    await this.mailService.sendVerification(
+      'sergeeva_a03@mail.ru', 
+      'https://booktook.dpdns.org/test'
+    );
+    return { sent: true };
+  }
 
   @Post('register')
   @Throttle({ default: THROTTLE.auth })
