@@ -96,12 +96,9 @@ import AppButton from './AppButton.vue'
 import { brownButton, darkText } from '@/assets/styles/palette.ts'
 import type { RegisterFormData, RegisterErrors, RegisterField } from '../../types/auth'
 import { useRouter } from 'vue-router'
-import { getFingerprint } from '@/composables/useFingerprint'
 import { useCheckAvailability } from '@/components/auth/сomposable/useCheckAvailability.ts'
-import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
-const userStore = useUserStore()
 
 const usernameCheck = useCheckAvailability('username')
 const emailCheck = useCheckAvailability('email')
@@ -155,15 +152,9 @@ async function submit(): Promise<void> {
   if (!canSubmit.value) return
   
   try {
-    const fingerprint = await getFingerprint()
-
     const response = await fetch('/api/auth/register', {
       method: 'POST',
-      credentials: 'include',
-      headers: { 
-        'Content-Type': 'application/json',
-        'X-Fingerprint': fingerprint,
-       },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     })
 
@@ -172,9 +163,8 @@ async function submit(): Promise<void> {
       errors[error.field] = error.message
       return
     }
-    
-    await userStore.load()
-    router.push('/home')
+
+    router.push({ path: '/auth/verify-pending', query: { email: form.email } })
   } 
   catch (error) {
     alert('Ошибка: ' + error)

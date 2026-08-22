@@ -8,6 +8,26 @@
       </a>
     </div>
 
+    <div v-if="needsVerification" class="bg-amber-50 border border-amber-300 rounded-xl p-4 text-left">
+      <p class="font-semibold text-amber-900">Почта не подтверждена</p>
+      <p class="text-sm text-amber-800/80 mt-1">
+        Мы отправили письмо на <span class="font-medium">{{ form.email }}</span>.
+        Перейдите по ссылке из него — вход выполнится сам.
+      </p>
+      <p v-if="resent" class="text-sm text-amber-900 mt-3 font-medium">Письмо отправлено ✓</p>
+      <template v-else>
+        <button
+          type="button"
+          class="mt-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          :disabled="resending"
+          @click="resendLetter"
+        >
+          {{ resending ? 'Отправляем...' : 'Отправить письмо ещё раз' }}
+        </button>
+        <p v-if="resendError" class="text-sm text-red-600 mt-2">{{ resendError }}</p>
+      </template>
+    </div>
+
     <div>
       <label class="block text-sm font-medium text-[#2C341B] mb-1">Email</label>
       <input
@@ -51,6 +71,7 @@ import { brownButton, darkText } from '@/assets/styles/palette.ts'
 import type { LoginFormData } from '../../types/auth.ts'
 import { useRouter } from 'vue-router'
 import { getFingerprint } from '@/composables/useFingerprint'
+import { resendVerification } from '@/composables/useVerification'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
@@ -62,6 +83,11 @@ const form = reactive<LoginFormData>({
 })
 
 const error = ref('')
+
+const needsVerification = ref(false)
+const resending = ref(false)
+const resent = ref(false)
+const resendError = ref('')
 
 const canSubmit = computed(() => form.email.trim() !== '' && form.password !== '')
 
@@ -104,8 +130,26 @@ function goRecover(): void {
 if (onCooldown.value) startCooldownTimer()
 onUnmounted(() => { if (cooldownTimer) clearInterval(cooldownTimer) })
 
+async function resendLetter(): Promise<void> {
+  if (resending.value) return
+
+  resending.value = true
+  resendError.value = ''
+  try {
+    await resendVerification(form.email)
+    resent.value = true
+  } catch (err) {
+    resendError.value = err instanceof Error ? err.message : 'Не удалось отправить письмо'
+  } finally {
+    resending.value = false
+  }
+}
+
 async function submit(): Promise<void> {
   error.value = ''
+  needsVerification.value = false
+  resent.value = false
+  resendError.value = ''
 
   if (!canSubmit.value || onCooldown.value) return
 
@@ -125,6 +169,11 @@ async function submit(): Promise<void> {
     if (response.status === 429) {
       const data = await response.json() as { message: string; retryAfter: number }
       triggerCooldown(data.retryAfter, data.message)
+      return
+    }
+
+    if (response.status === 403) {
+      needsVerification.value = true
       return
     }
 

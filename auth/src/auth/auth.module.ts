@@ -15,9 +15,11 @@ import { AuthService } from './auth.service';
 import { SessionService } from './session.service';
 import { TokenService } from './token.service';
 import { CookieService } from './cookie.service';
+import { VerificationService } from './verification.service'; 
 import { AvailabilityService } from './availability.service';
 import { jwt_config } from '../config/jwt.config';
 import { THROTTLE } from '../config/limit.config';
+import { VerificationController } from './verification.controller';
 
 @Module({
   imports: [
@@ -42,7 +44,8 @@ import { THROTTLE } from '../config/limit.config';
   controllers: [
     AuthController, 
     SessionController, 
-    AvailabilityController
+    AvailabilityController, 
+    VerificationController
   ],
   providers: [
     AuthService,
@@ -50,6 +53,7 @@ import { THROTTLE } from '../config/limit.config';
     TokenService,
     CookieService,
     MailService,
+    VerificationService,
     AvailabilityService,
     { provide: APP_GUARD, useClass: AppThrottlerGuard },
   ],

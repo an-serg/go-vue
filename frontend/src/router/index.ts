@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import MainRegisterView from '@/components/auth/MainRegisterView.vue'
 import MainDescription from '@/components/MainDescription.vue'
 import MainLoginView from '@/components/auth/MainLoginView.vue'
+import VerifyPendingView from '@/components/auth/VerifyPendingView.vue'
+import VerifyView from '@/components/auth/VerifyView.vue'
 import HomePage from '@/components/HomePage.vue'
 import ProfilePage from '@/components/profile/ProfilePage.vue'
 import { useUserStore } from '@/stores/user'
@@ -25,6 +27,16 @@ const router = createRouter({
       component: MainLoginView,
     },
     {
+      path: '/auth/verify-pending',
+      name: 'verify_pending',
+      component: VerifyPendingView,
+    },
+    {
+      path: '/auth/verify',
+      name: 'verify',
+      component: VerifyView,
+    },
+    {
       path: '/home',
       name: 'main_home_page',
       component: HomePage,
@@ -41,6 +53,8 @@ const publicRoutes = [
   '/',
   '/auth/login',
   '/auth/register',
+  '/auth/verify-pending',
+  '/auth/verify',
 ]
 
 router.beforeEach(async (to) => {

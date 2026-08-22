@@ -36,13 +36,16 @@
               <p v-if="verificationSent" class="text-sm text-amber-900 mt-3 font-medium">
                 Письмо отправлено — проверьте почту 📬
               </p>
-              <button
-                v-else
-                class="mt-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
-                @click="requestVerification"
-              >
-                Отправить письмо
-              </button>
+              <template v-else>
+                <button
+                  class="mt-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  :disabled="verificationSending"
+                  @click="requestVerification"
+                >
+                  {{ verificationSending ? 'Отправляем...' : 'Отправить письмо' }}
+                </button>
+                <p v-if="verificationError" class="text-sm text-red-600 mt-2">{{ verificationError }}</p>
+              </template>
             </div>
           </div>
         </div>
@@ -135,6 +138,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
+import { resendVerification } from '@/composables/useVerification'
 
 const BIO_LIMIT = 500
 
@@ -154,6 +158,8 @@ const settingsSaved = ref(false)
 const settingsError = ref('')
 
 const verificationSent = ref(false)
+const verificationSending = ref(false)
+const verificationError = ref('')
 
 const emailVerified = computed(() => profile.value?.email_verified ?? false)
 
@@ -216,7 +222,18 @@ async function saveSettings(): Promise<void> {
   }
 }
 
-function requestVerification(): void {
-  verificationSent.value = true
+async function requestVerification(): Promise<void> {
+  if (verificationSending.value || !profile.value) return
+
+  verificationSending.value = true
+  verificationError.value = ''
+  try {
+    await resendVerification(profile.value.email)
+    verificationSent.value = true
+  } catch (error) {
+    verificationError.value = error instanceof Error ? error.message : 'Не удалось отправить письмо'
+  } finally {
+    verificationSending.value = false
+  }
 }
 </script>

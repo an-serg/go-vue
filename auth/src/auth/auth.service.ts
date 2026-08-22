@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as argon2 from 'argon2';
@@ -67,6 +67,13 @@ export class AuthService {
       throw new UnauthorizedException({ 
         field: 'password', 
         message: 'Неверный email или пароль' 
+      });
+    }
+
+    if (!user.email_verified) {
+      throw new ForbiddenException({
+        code: 'email_not_verified',
+        message: 'Подтвердите почту — мы отправили письмо при регистрации',
       });
     }
     
