@@ -1,29 +1,75 @@
+const baseColors = {
+  cream: '#FDF6E6',
+
+  green: '#AFBA90',
+  greenDark: '#585528',
+  greenHover: '#E1EEBA',
+
+  pink: '#B97D7D',
+  pinkDark: '#743F3B',
+  pinkHover: '#EFA0A0',
+
+  error: '#B85C5C',
+  errorFocus: '#9B4A4A',
+
+  success: '#4CAF50',
+  successFocus: '#3D8B40',
+
+  info: '#3B82F6',
+  infoFocus: '#2563EB',
+
+  mutedGreenDark: 'rgba(88, 85, 40, 0.7)',
+} as const
+
+
 export const colors = {
-  // Фон
   bg: {
-    main: '#DDDFC2',      // основной фон страницы
-    card: '#688A65',      // фон карточек фичей
-    cardHover: '#5A7A57', // фон карточек при наведении
+    main: baseColors.cream,
+    green: baseColors.green,
+    pink: baseColors.pink,
   },
 
-  // Текст
   text: {
-    dark: '#2C341B',      // основной тёмный (заголовки)
-    light: '#DDDFC2',     // светлый (на тёмном фоне)
-    muted: 'rgba(44, 52, 27, 0.6)',  // приглушённый
-    subtitle: 'rgba(44, 52, 27, 0.8)', // подзаголовок
+    greenDark: baseColors.greenDark,
+    pinkDark: baseColors.pinkDark,
+    light: baseColors.cream,
+    muted: baseColors.mutedGreenDark,   // теперь ссылаемся на константу
   },
 
-  // Кнопка
   button: {
-    bg: '#5C4A3A',        // коричневый фон
-    hover: '#7A6450',     // при наведении
-    text: '#DDDFC2',      // текст кнопки
+    green: {
+      bg: baseColors.green,
+      hover: baseColors.greenHover,
+      text: baseColors.greenDark,
+    },
+
+    pink: {
+      bg: baseColors.pink,
+      hover: baseColors.pinkHover,
+      text: baseColors.cream,
+    },
   },
 
-  // Иконки
+  input: {
+    bg: baseColors.cream,               // фон полей
+    border: baseColors.greenDark,       // рамка
+    focusBorder: baseColors.greenDark,  // рамка при фокусе (можно оставить greenDark)
+    text: baseColors.greenDark,         // вводимый текст
+    placeholder: baseColors.mutedGreenDark, // placeholder с opacity 0.7
+    error: baseColors.error,
+  },
+
   icon: {
-    dark: '#2C341B',      // на светлом фоне
-    light: '#DDDFC2',     // на тёмном фоне
+    dark: baseColors.greenDark,
+    light: baseColors.cream,
+  },
+
+  status: {
+    error: baseColors.error,
+    errorFocus: baseColors.errorFocus,
+    success: baseColors.success,
+    successFocus: baseColors.successFocus,
+    info: baseColors.info,
+    infoFocus: baseColors.infoFocus,
   },
 } as const

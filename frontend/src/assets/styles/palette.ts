@@ -1,24 +1,84 @@
-import type { ButtonColors, CardColors, TextColors } from '@/types/ui'
+import type {
+  ButtonColors,
+  CardColors,
+  TextColors,
+  InputColors,
+  StatusColors
+} from '@/types/ui'
 
-// --- Кнопка ---
-export const brownButton: ButtonColors = {
-  bg: '#5C4A3A',
-  text: '#DDDFC2',
-  hoverBg: '#7A6450'
+import { colors } from './colors'
+
+
+// ====================
+// BUTTONS
+// ====================
+
+export const greenButton: ButtonColors = {
+  bg: colors.button.green.bg,
+  hoverBg: colors.button.green.hover,
+  text: colors.button.green.text,
 }
 
-// --- Карточка ---
+
+export const pinkButton: ButtonColors = {
+  bg: colors.button.pink.bg,
+  hoverBg: colors.button.pink.hover,
+  text: colors.button.pink.text,
+}
+
+
+// ====================
+// CARDS
+// ====================
+
 export const greenCard: CardColors = {
-  bg: '#688A65',
-  text: '#DDDFC2',
-  title: '#DDDFC2',
-  icon: '#DDDFC2',
-  hoverBg: '#5A7A57'
+  bg: colors.bg.green,
+  hoverBg: colors.bg.green,
+  text: colors.text.light,
+  title: colors.text.light,
+  icon: colors.icon.light,
 }
 
-// --- Текст на странице ---
-export const darkText: TextColors = {
-  main: '#2C341B',
-  subtitle: 'rgba(44, 52, 27, 0.8)',
-  body: 'rgba(44, 52, 27, 0.6)'
+
+// ====================
+// TEXT
+// ====================
+
+export const greenText: TextColors = {
+  main: colors.text.greenDark,
+  subtitle: colors.text.muted,
+  body: colors.text.muted,
 }
+
+
+export const pinkText: TextColors = {
+  main: colors.text.pinkDark,
+  subtitle: colors.text.muted,
+  body: colors.text.muted,
+}
+
+// ====================
+// INPUTS
+// ====================
+export const formInput: InputColors = {
+  bg: colors.input.bg,                 // cream
+  border: colors.input.border,         // greenDark
+  focusBorder: colors.input.focusBorder, // greenDark (или можно другой)
+  text: colors.input.text,             // greenDark
+  placeholder: colors.input.placeholder, // greenDark c opacity 0.7
+  error: colors.input.error,
+}
+
+// ====================
+// STATUS
+// ====================
+export const statusColors: StatusColors = {
+  error: colors.status.error,
+  errorFocus: colors.status.errorFocus,
+  success: colors.status.success,
+  successFocus: colors.status.successFocus,
+  info: colors.status.info,
+  infoFocus: colors.status.infoFocus,
+}
+
+export const mainBg = colors.bg.main

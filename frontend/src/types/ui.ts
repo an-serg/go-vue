@@ -20,3 +20,21 @@ export interface TextColors {
   subtitle: string  // подзаголовок
   body: string      // описание
 }
+
+export interface InputColors {
+  bg: string
+  border: string
+  focusBorder: string
+  text: string
+  placeholder: string
+  error: string
+}
+
+export interface StatusColors {
+  error: string
+  errorFocus: string
+  success: string
+  successFocus: string
+  info: string
+  infoFocus: string
+}

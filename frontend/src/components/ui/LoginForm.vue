@@ -1,44 +1,54 @@
 <template>
-  <form class="space-y-6" @submit.prevent="submit">    
-    <div>
-      <label class="block text-sm font-medium text-[#2C341B] mb-1">Email</label>
-      <input 
-        v-model="emailCheck.value" 
-        @blur="emailCheck.checkNow"
-        type="email" 
-        placeholder="anna@mail.ru"
-        class="w-full px-4 py-3 rounded-xl bg-[#DDDFC2] border-2 text-[#2C341B] placeholder-[#94A59C] focus:outline-none transition-colors"
-        :class="errors.email ? 'border-red-500 focus:border-red-600' : emailCheck.error ? 'border-red-500 focus:border-red-600' : emailCheck.available === true ? 'border-green-500 focus:border-green-600' : emailCheck.checking ? 'border-blue-400 focus:border-blue-500' : 'border-[#94A59C] focus:border-[#688A65]'"
-      >
-      <p class="text-sm mt-1 h-5">
-        <span v-if="emailCheck.checking" class="text-blue-600">Проверяем...</span>
-        <span v-else-if="errors.email" class="text-red-600">{{ errors.email }}</span>
-        <span v-else-if="emailCheck.error" class="text-red-600">{{ emailCheck.error }}</span>
-        <span v-else-if="emailCheck.available === true" class="text-green-600">✓ Найден</span>
-      </p>
+  <form :style="cssVars" class="space-y-4" @submit.prevent="submit">
+    <div class="mb-6 space-y-2">
+      <!-- Поле "Email" -->
+      <div>
+        <label class="block text-base font-medium text-[var(--input-text)] mb-1">Email</label>
+        <input
+          v-model="emailCheck.value"
+          @blur="emailCheck.checkNow"
+          type="email"
+          placeholder="anna@mail.ru"
+          class="w-full px-4 py-2.5 rounded-xl text-sm bg-[var(--input-bg)] border-2 text-[var(--input-text)] placeholder-[var(--input-placeholder)] focus:outline-none transition-colors"
+          :class="inputBorderClass(emailCheck, errors.email)"
+        />
+        <p class="text-xs h-3">
+          <span v-if="emailCheck.checking" class="text-[var(--status-info)]">Проверяем...</span>
+          <span v-else-if="errors.email" class="text-[var(--status-error)]">{{ errors.email }}</span>
+          <span v-else-if="emailCheck.error" class="text-[var(--status-error)]">{{ emailCheck.error }}</span>
+          <span v-else-if="emailCheck.available === true" class="text-[var(--status-success)]">✓ Найден</span>
+        </p>
+      </div>
+
+      <!-- Поле "Пароль" -->
+      <div>
+        <label class="block text-base font-medium text-[var(--input-text)] mb-1">Пароль</label>
+        <input
+          v-model="form.password"
+          type="password"
+          placeholder="••••••••"
+          class="w-full px-4 py-2.5 rounded-xl text-sm bg-[var(--input-bg)] border-2 text-[var(--input-text)] placeholder-[var(--input-placeholder)] focus:outline-none transition-colors"
+          :class="errors.password ? 'border-[var(--status-error)] focus:border-[var(--status-error-focus)]' : 'border-[var(--input-border)] focus:border-[var(--input-focus-border)]'"
+        />
+        <p class="text-xs h-3">
+          <span v-if="errors.password" class="text-[var(--status-error)]">{{ errors.password }}</span>
+        </p>
+      </div>
     </div>
-    
-    <div>
-      <label class="block text-sm font-medium text-[#2C341B] mb-1">Пароль</label>
-      <input 
-        v-model="form.password" 
-        type="password" 
-        placeholder="••••••••"
-        class="w-full px-4 py-3 rounded-xl bg-[#DDDFC2] border-2 text-[#2C341B] placeholder-[#94A59C] focus:outline-none transition-colors"
-        :class="errors.password ? 'border-red-500 focus:border-red-600' : 'border-[#94A59C] focus:border-[#688A65]'"
-      >
-      <p class="text-sm mt-1 h-5">
-        <span v-if="errors.password" class="text-red-600">{{ errors.password }}</span>
-      </p>
-    </div>
-    
-    <div>
-      <AppButton :colors="brownButton" type="submit" class="w-full justify-center" :disabled="!canSubmit">
+
+    <div class="text-center mt-8">
+      <AppButton :colors="pinkButton" type="submit" class="w-1/4 justify-center" :disabled="!canSubmit">
         Войти
       </AppButton>
+    </div>
 
-      <a @click="go_to_main_register" class="text-base sm:text-lg max-w-2xl mt-3 mx-auto cursor-pointer hover:opacity-60 block" :style="{ color: darkText.main }">
-        Зарегистрироваться
+    <div class="text-center mt-4">
+      <span class="text-[var(--text-main)] block">Ещё нет аккаунта?</span>
+      <a
+        @click="go_to_main_register"
+        class="text-[var(--text-pink)] underline cursor-pointer hover:opacity-60 block ml-1 "
+      >
+      Зарегистрироваться
       </a>
     </div>
   </form>
@@ -47,8 +57,8 @@
 <script setup lang="ts">
 import { reactive, computed, watch } from 'vue'
 import AppButton from './AppButton.vue'
-import { brownButton, darkText } from '@/assets/styles/palette.ts'
-import type { LoginFormData, LoginField, LoginErrors } from '../../types/auth.ts'
+import { pinkButton, greenText, pinkText, formInput, statusColors } from '@/assets/styles/palette'
+import type { LoginFormData, LoginField, LoginErrors } from '../../types/auth'
 import { useRouter } from 'vue-router'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { useCheckAvailability } from '@/components/auth/сomposable/useCheckAvailability.ts'
@@ -67,7 +77,34 @@ const errors = reactive<LoginErrors>({
   password: ''
 })
 
+// CSS-переменные на основе palette
+const cssVars = computed(() => ({
+  '--input-bg': formInput.bg,
+  '--input-border': formInput.border,
+  '--input-focus-border': formInput.focusBorder,
+  '--input-text': formInput.text,
+  '--input-placeholder': formInput.placeholder,
+  '--status-error': statusColors.error,
+  '--status-error-focus': statusColors.errorFocus,
+  '--status-success': statusColors.success,
+  '--status-success-focus': statusColors.successFocus,
+  '--status-info': statusColors.info,
+  '--status-info-focus': statusColors.infoFocus,
+  '--text-main': greenText.main,
+  '--text-pink': pinkText.main,
+}))
+
 watch(() => emailCheck.value, () => { errors.email = '' })
+
+function inputBorderClass(
+  check: { available: boolean | null; checking: boolean; error: string },
+  serverError: string
+): string {
+  if (serverError || check.error) return 'border-[var(--status-error)] focus:border-[var(--status-error-focus)]'
+  if (check.available === true) return 'border-[var(--status-success)] focus:border-[var(--status-success-focus)]'
+  if (check.checking) return 'border-[var(--status-info)] focus:border-[var(--status-info-focus)]'
+  return 'border-[var(--input-border)] focus:border-[var(--input-focus-border)]'
+}
 
 const canSubmit = computed(() => emailCheck.available === true && !emailCheck.checking)
 
